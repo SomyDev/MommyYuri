@@ -3,6 +3,7 @@
 
 # important things
 import random
+import Cython
 import asyncio
 import discord
 import aiohttp
@@ -15,37 +16,48 @@ TOKEN = 'NDYyMzU1MzU5MTczMTgxNDU5.Dhi_aw.X2bocPGBJJAzBGPM8mMA7je0Q3A'
 client = discord.Client()
 botclient = Bot(command_prefix='!')
 
-# dictionary of chat commands
-# bot is currently BROKEN with these active as the commands have not been implemented yet
-#chatdict = {
-#    "!hello": hello(),
-#    "!insult": insult(),
-#    "!love": love(),
-#    "!hug": hug(),
-#    "!smut": smut(),
-#    "!fap": fap(),
-#    "!music": music()
-#}
+"""
+    Basic Commands
+"""
 
+#Says hello
+async def hello(message):
+    msg = 'Hello there, {0.author.mention}'.format(message)
+    await client.send_message(message.channel, msg)
 
+#This function was just used to confirm I could run my own instance of MommyYuri
+async def sdev(message):
+    msg = "```Command execution from SomyDev's terminal was successful```"
+    await client.send_message(message.channel, msg)
 
-# change status to current game (not working for fuckall reasons)
-@client.event
-# wait until server is up then execute
-async def wait_until_ready():
-    await client.change_presence('',game=discord.Game(name='YYLC'))
+#Picks a random line from insults.txt and messages it
+async def sub(message):
+    file = open("insults.txt", 'r')
+    lines = []
+    for line in file:
+        lines.append(line)
+    file.close()
 
-# !Hello command - says hello
+    msg = random.choice(lines)
+    await client.send_message(message.channel, msg)   
+
+#WIP Dictionary
+chatdict = {
+    "!hello" : hello,
+    "!sdev" : sdev,
+    "!sub" : sub
+}
+
 @client.event
 # wait until message is sent on any of the bot's monitored channels
 async def on_message(message):
-    # prevent bot from replying to itself
-    if message.author == client.user:
+    command = message.content + ' '
+    command = command[:command.index(' ')]
+    # prevent bot from replying to itself and check dictionary key is valid
+    if message.author == client.user or command not in chatdict.keys():
         return
-    # says hello to requested user with a mention
-    if message.content.startswith('!hello'):
-        msg = 'Hello there, {0.author.mention}'.format(message)
-        await client.send_message(message.channel, msg)
+    await chatdict[command](message)
+    
 
 
 # prints information to console window when bot is connected and active
@@ -56,6 +68,8 @@ async def on_ready():
     print(client.user.id)
     print('Bot functionality now active!')
     print('------')
+
+    await client.change_presence(game=discord.Game(name='YYLC', type=0))
     
 
 #start bot command with API token
