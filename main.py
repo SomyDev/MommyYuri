@@ -3,6 +3,8 @@
 
 # important things
 import random
+import glob
+import os
 import Cython
 import asyncio
 import discord
@@ -30,6 +32,11 @@ async def sdev(message):
     msg = "```Command execution from SomyDev's terminal was successful```"
     await client.send_message(message.channel, msg)
 
+#This function was just used to confirm I could run my own instance of MommyYuri
+async def dom(message):
+    msg = "'I'll fukin get round to it, pls be patient' - SOMY \<3"
+    await client.send_message(message.channel, msg)
+
 #Picks a random line from insults.txt and messages it
 async def sub(message):
     file = open("insults.txt", 'r')
@@ -41,11 +48,24 @@ async def sub(message):
     msg = random.choice(lines)
     await client.send_message(message.channel, msg)   
 
-#WIP Dictionary
+#pics
+async def pic(message):
+    files = os.listdir('pic/')
+    await client.send_file(message.channel, "pic/" + random.choice(files))
+
+async def feet(message):
+    files = os.listdir('feet/')
+    await client.send_file(message.channel, "feet/" + random.choice(files))
+
+
+#WIP Dictionary (temporarily omitted hello because of Emiliarra's instance)
 chatdict = {
-    "!hello" : hello,
+    #"!hello" : hello,
     "!sdev" : sdev,
-    "!sub" : sub
+    "!sub" : sub,
+    "!dom" : dom,
+    "!pic" : pic,
+    "!feet" : feet
 }
 
 @client.event
