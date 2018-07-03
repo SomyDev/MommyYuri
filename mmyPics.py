@@ -1,35 +1,57 @@
 import os
 import requests
 import mmyCore as core
-#from Pybooru import Danbooru
+from pybooru import Danbooru, Moebooru
 
-#pics
-async def pic(message):
-    await core.randomPic(message, 'pic/')
+#booru
+async def lewd(message, attempts = 0):
+    if attempts == 5:
+        return
 
-#feet
-async def feet(message):
-    await core.randomPic(message, 'feet/')
-
-"""#booru
-async def booru(message):
-    query = message.content[message.content.index(' ') + 1:]
-    
-    bclient = Danbooru('danbooru')
-    pic = bclient.post_list(tags=query, limit=1)
     try:
-        fileurl = 'https://danbooru.donmai.us' + pic[0]['file_url']
+        query = message.content[message.content.index(' ') + 1:]
+        
+        bclient = Danbooru('danbooru')
+        pic = bclient.post_list(tags=query, random=True)
+        try:
+            fileurl = pic[0]['file_url']
+        except:
+            fileurl = pic[0]['source']  
     except:
-        fileurl = 'https://danbooru.donmai.us' + pic[0]['source']
+        await lewd(message, attempts + 1)
+    
+    await core.reply(message.channel, fileurl)
 
-    file = open("tmp.jpg", 'wb')
-    response = requests.get("Image path: {0}".format(post['file_url']), stream=True)
+async def pic(message, attempts = 0):
+    if attempts == 5:
+        return
 
-    if not response.ok:
-        print response
+    try:
+        query = message.content[message.content.index(' ') + 1:]
+        
+        bclient = Danbooru('danbooru')
+        pic = bclient.post_list(tags=query, random=True, rating = "safe", is_rating_locked = 1)
+        try:
+            fileurl = pic[0]['file_url']
+        except:
+            fileurl = pic[0]['source']  
+    except:
+        await lewd(message, attempts + 1)
+    
+    await core.reply(message.channel, fileurl)
 
-    for block in response.iter_content(1024):
-        if not block:
-            break
+async def interact(message, action, tags):
+    target = message.content.split(' ')[1]
+    await core.reply(message.channel, target + " has been " + action + " by " + message.author.mention + "!")
+    message.content = tags
+    await lewd(message)
 
-        file.write(block)"""
+async def hug(message):
+    await interact(message, "hugged", "!dummy couple hug")
+
+async def step(message):
+    await interact(message, "stepped on", "!dummy stepped_on")
+
+async def headpat(message):
+    await interact(message, "headpat", "!dummy petting")
+

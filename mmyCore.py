@@ -9,6 +9,7 @@ from mmyLevel import *
 from mmyLines import *
 from mmyAdmin import *
 from mmyPics import *
+from mmyAi import *
 
 client = discord.Client()
 
@@ -18,6 +19,9 @@ client = discord.Client()
 
 async def reply(msgIn, msgOut):
     await client.send_message(msgIn, msgOut)
+
+async def react(msgIn, react):
+    await client.add_reaction(msgIn,react)
 
 async def randomLine(msgIn, niceFile, nastyFile, mentionUser = False, formatVar = False):    
     if await checkRole(msgIn, "Degenerate"):
@@ -79,13 +83,15 @@ async def on_ready():
 @client.event
 # wait until message is sent on any of the bot's monitored channels
 async def on_message(message):
+    await stats(message)
     command = message.content + ' '
     command = command[:command.index(' ')]
     # prevent bot from replying to itself and check dictionary key is valid
     if message.author == client.user:
         return
-    await lvl(message)
     if command not in chatdict.keys():
+        await lvlReact(message)
+        await lvl(message)
         return
     await chatdict[command](message)
 
@@ -100,7 +106,13 @@ async def help2(message):
             !exp: check your stats such as your EXP and level on the server\n
             !compliment: recieve a nice compliment from me whether or not you're a Degenerate\n
             !magic8ball: recieve an answer from the beyond\n
-            !pick: have me pick between things, either seperated by spaces or using quotation marks```"""
+            !pick: have me pick between things, either seperated by spaces or using quotation marks\n
+            !pic: search for an (often) SFW picture on Danbooru with up to 2 space separated tags\n
+            !lewd: search for a NSFW picture on Danbooru with up to 2 space separated tags\n
+            !react: I will react your message with a random emoji regardless of your level\n
+            !hug: hug a pinged user\n
+            !headpat: headpat a pinged user\n
+            !step_on: step on a pinged user```"""
     
     await reply(message.channel, msg)
     
@@ -111,8 +123,6 @@ chatdict = {
     "!hello" : hello,
     "!sub" : sub,
     "!dom" : dom,
-    #"!pic" : pic,
-    #"!feet" : feet,
     "!admin_clrdata" : admin_clrdata,
     "!admin_kill" : admin_kill,
     "!admin_lvlmod" : admin_lvlmod,
@@ -122,5 +132,13 @@ chatdict = {
     "!exp" : exp,
     "!compliment" : compliment,
     "!magic8ball" : magic8ball,
-    "!pick" : pick
+    "!pick" : pick,
+    "!milk" : milk,
+    "!react" : rdmReact,
+    "!lewd" : lewd,
+    "!pic" : pic,
+    "!hug" : hug,
+    "!step_on" : step,
+    "!headpat" : headpat,
+    "!dice" : dice
 } 

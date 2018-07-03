@@ -6,6 +6,14 @@ async def hello(message):
     msg = 'Hello there, {0.author.mention}'.format(message)
     await core.reply(message.channel, msg)
 
+async def milk(message):
+    msg = ":milk:"
+    await core.reply(message.channel, msg)
+
+async def dice(message):
+    sides = int(message.content.split(' ')[1])
+    await core.reply(message.channel, "You rolled a " + str(random.randint(1,sides)))
+
 #Dom lines
 async def dom(message):
     await core.randomLine(message, "nicedom.txt", "nastydom.txt")
@@ -30,6 +38,6 @@ async def pick(message):
             temp.append(options[i] + options[i + 1])
             temp[-1] = temp[-1].replace('"','')
         options = temp
-        
+
     msg = "I pick " + random.choice(options)
     await core.reply(message.channel, msg)
